@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube to mp4 / mp3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+
+        input[type="url"]:focus {
+            border-color: #667eea;
+        }
+
+        .format-selection {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .format-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .format-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .format-option label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .format-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .format-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .features {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .feature-list {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .feature {
+            flex: 1;
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #667eea;
+        }
+
+        .feature-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .format-selection {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .feature-list {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">YT</div>
+        <h1>YouTube to mp4 / mp3</h1>
+        <p class="subtitle">Download your favorite videos in MP4 or MP3 format</p>
+        
+        <form id="downloadForm">
+            <div class="input-group">
+                <label for="videoUrl">YouTube Video URL</label>
+                <input 
+                    type="url" 
+                    id="videoUrl" 
+                    placeholder="https://www.youtube.com/watch?v=..." 
+                    required
+                >
+            </div>
+            
+            <div class="input-group">
+                <label>Select Format</label>
+                <div class="format-selection">
+                    <div class="format-option">
+                        <input type="radio" id="mp4" name="format" value="mp4" checked>
+                        <label for="mp4">
+                            <span class="format-icon">🎥</span>
+                            MP4 Video
+                        </label>
+                    </div>
+                    <div class="format-option">
+                        <input type="radio" id="mp3" name="format" value="mp3">
+                        <label for="mp3">
+                            <span class="format-icon">🎵</span>
+                            MP3 Audio
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="download-btn" id="downloadBtn">
+                Download Now
+            </button>
+        </form>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="status-message" id="statusMessage"></div>
+        
+        <div class="features">
+            <div class="feature-list">
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">Fast Download</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-text">Secure & Safe</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-text">Mobile Friendly</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+class YouTubeDownloader {
+    constructor() {
+        this.form = document.getElementById('downloadForm');
+        this.downloadBtn = document.getElementById('downloadBtn');
+        this.progressContainer = document.getElementById('progressContainer');
+        this.progressFill = document.getElementById('progressFill');
+        this.statusMessage = document.getElementById('statusMessage');
+        
+        this.initEventListeners();
+    }
+    
+    initEventListeners() {
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    }
+    
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        const videoUrl = document.getElementById('videoUrl').value;
+        const format = document.querySelector('input[name="format"]:checked').value;
+        
+        if (!this.isValidYouTubeUrl(videoUrl)) {
+            this.showStatus('Please enter a valid YouTube URL', 'error');
+            return;
+        }
+        
+        await this.downloadVideo(videoUrl, format);
+    }
+    
+    isValidYouTubeUrl(url) {
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)[a-zA-Z0-9_-]{11}/;
+        return youtubeRegex.test(url);
+    }
+    
+    async downloadVideo(url, format) {
+        try {
+            this.setLoading(true);
+            this.showProgress();
+            this.showStatus('Preparing download...', 'info');
+            
+            const response = await fetch('http://localhost:3000/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url, format })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Download request failed');
+            }
+            
+            await this.simulateProgress();
+            
+            if (data.success) {
+                const link = document.createElement('a');
+                link.href = data.downloadUrl;
+                link.download = data.filename || `download.${format}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                this.showStatus(`Download started for ${format.toUpperCase()}!`, 'success');
+            } else {
+                throw new Error(data.message || 'Download failed');
+            }
+            
+        } catch (error) {
+            this.showStatus(`Download failed: ${error.message}`, 'error');
+            console.error('Download error:', error);
+        } finally {
+            this.setLoading(false);
+            this.hideProgress();
+        }
+    }
+    
+    async simulateProgress() {
+        const steps = [0, 25, 50, 75, 100];
+        for (const step of steps) {
+            this.updateProgress(step);
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    }
+    
+    setLoading(loading) {
+        this.downloadBtn.disabled = loading;
+        this.downloadBtn.textContent = loading ? 'Processing...' : 'Download Now';
+    }
+    
+    showProgress() {
+        this.progressContainer.style.display = 'block';
+    }
+    
+    hideProgress() {
+        setTimeout(() => {
+            this.progressContainer.style.display = 'none';
+            this.updateProgress(0);
+        }, 1000);
+    }
+    
+    updateProgress(percentage) {
+        this.progressFill.style.width = `${percentage}%`;
+    }
+    
+    showStatus(message, type) {
+        this.statusMessage.textContent = message;
+        this.statusMessage.className = `status-message status-${type}`;
+        this.statusMessage.style.display = 'block';
+        
+        if (type === 'success' || type === 'error') {
+            setTimeout(() => {
+                this.statusMessage.style.display = 'none';
+            }, 5000);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new YouTubeDownloader();
+});
+
+document.querySelectorAll('.format-option label').forEach(label => {
+    label.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px)';
+    });
+    
+    label.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+    });
+});
+    </script>
+</body>
+</html>
